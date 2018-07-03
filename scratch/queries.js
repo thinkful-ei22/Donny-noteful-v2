@@ -43,8 +43,8 @@ knex('notes')
   .where('notes.id',`${updateId}`)
   .update(updatedNote)
   .returning(['id', 'title', 'content'])
-  .then(([results]) => {
-    console.log(results);
+  .then(([note]) => {
+    console.log(note);
   })
   .catch(err => {
     console.error(err);
@@ -58,8 +58,8 @@ let newNote = {title:'Super Mario 64 is My Only Character Trait', content: 'waho
 knex('notes')
   .insert(newNote)
   .returning(['id', 'title', 'content'])
-  .then(([results]) => {
-    console.log(results);
+  .then(([note]) => {
+    console.log(note);
   })
   .catch(err => {
     console.error(err);

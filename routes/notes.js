@@ -36,7 +36,7 @@ router.get('/:id', (req, res, next) => {
   const {id} = req.params;
 
   knex
-    .select('notes.id','title','content')
+    .select()
     .from('notes')
     .where('id',id)
     .then(([note]) => {  //array destructuring
@@ -53,7 +53,7 @@ router.get('/:id', (req, res, next) => {
 
 // Put update an item
 router.put('/:id', (req, res, next) => {
-  const id = req.params.id;
+  const {id} = req.params;
 
   /***** Never trust users - validate input *****/
   const updateObj = {};
@@ -72,7 +72,9 @@ router.put('/:id', (req, res, next) => {
     return next(err);
   }
 
-  notes.update(id, updateObj)
+  knex('notes')
+    .where('notes.id',id)
+    .update(updateObj)
     .then(item => {
       if (item) {
         res.json(item);
@@ -83,6 +85,21 @@ router.put('/:id', (req, res, next) => {
     .catch(err => {
       next(err);
     });
+
+
+   
+
+  // notes.update(id, updateObj)
+  //   .then(item => {
+  //     if (item) {
+  //       res.json(item);
+  //     } else {
+  //       next();
+  //     }
+  //   })
+  //   .catch(err => {
+  //     next(err);
+  //   });
 });
 
 // Post (insert) an item
