@@ -30,6 +30,24 @@ knex
   .from('notes')
   .where('id',`${searchId}`)
   .then( ([item]) => {
-      console.log(item);
+    console.log(item);
   });
+
+//Update Note By Id accepts an ID and an object with the desired updates. 
+//It returns the updated note as an object
+
+let updateId = 1005;
+let updatedNote = {title:'Mr Pants Feels Good All Over',content:'Very nice trousers!'};
+
+knex('notes')
+  .where('notes.id',`${updateId}`)
+  .update(updatedNote)
+  .returning(['id', 'title', 'content'])
+   .then(([results]) => {
+     console.log(results);
+   })
+   .catch(err => {
+     console.error(err);
+   });
+
 
