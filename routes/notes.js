@@ -23,7 +23,7 @@ router.get('/', (req, res, next) => {
 
     })
     .orderBy('notes.id')
-    .then(results => {
+    .then( results => {
       res.json(results);
     })
     .catch(err => {
@@ -102,22 +102,24 @@ router.put('/:id', (req, res, next) => {
   //   });
 });
 
-// Post (insert) an item
+// CREATE / Post (insert) an item
 router.post('/', (req, res, next) => {
   const { title, content } = req.body;
 
-  const newItem = { title, content };
+  const newNote = { title, content };
   /***** Never trust users - validate input *****/
-  if (!newItem.title) {
+  if (!newNote.title) {
     const err = new Error('Missing `title` in request body');
     err.status = 400;
     return next(err);
   }
 
-  notes.create(newItem)
-    .then(item => {
-      if (item) {
-        res.location(`http://${req.headers.host}/notes/${item.id}`).status(201).json(item);
+  knex('notes')
+    .insert(newNote)
+    .returning(['id', 'title', 'content'])
+    .then(([note]) => {
+      if (note) {
+        res.location(`http://${req.headers.host}/notes/${note.id}`).status(201).json(note);
       }
     })
     .catch(err => {
@@ -125,17 +127,26 @@ router.post('/', (req, res, next) => {
     });
 });
 
+
+
+
 // Delete an item
 router.delete('/:id', (req, res, next) => {
-  const id = req.params.id;
+  const {id} = req.params;
 
-  notes.delete(id)
-    .then(() => {
-      res.sendStatus(204);
-    })
-    .catch(err => {
-      next(err);
-    });
+  knex('notes')
+    .where('id',id)
+    .del()
+    .then( () => res.sendStatus(204))
+    .catch(err => next(err));
+
+  // notes.delete(id)
+  //   .then(() => {
+  //     res.sendStatus(204);
+  //   })
+  //   .catch(err => {
+  //     next(err);
+  //   });
 });
 
 module.exports = router;
