@@ -43,11 +43,42 @@ knex('notes')
   .where('notes.id',`${updateId}`)
   .update(updatedNote)
   .returning(['id', 'title', 'content'])
-   .then(([results]) => {
-     console.log(results);
-   })
-   .catch(err => {
-     console.error(err);
-   });
+  .then(([results]) => {
+    console.log(results);
+  })
+  .catch(err => {
+    console.error(err);
+  });
+
+//Create a Note accepts an object with the note properties and inserts it in the DB.
+// It returns the new note (including the new id) as an object.
+
+let newNote = {title:'Super Mario 64 is My Only Character Trait', content: 'wahoo!'};
+
+knex('notes')
+  .insert(newNote)
+  .returning(['id', 'title', 'content'])
+  .then(([results]) => {
+    console.log(results);
+  })
+  .catch(err => {
+    console.error(err);
+  });
+
+
+//DELETE NOTE BY ID
+
+
+let deleteId = 1001;
+
+knex('notes')
+  .where('notes.id', deleteId)
+  .del()
+  .then(() => {
+    console.log('DELETED!');
+  })
+  .catch(err => {
+    console.error(err);
+  });
 
 
