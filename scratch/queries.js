@@ -2,7 +2,10 @@
 
 const knex = require('../knex');
 
-let searchTerm = 'gaga';
+
+
+//Get all notes that match a search term
+let searchTerm = 'cat';
 knex
   .select('notes.id', 'title', 'content')
   .from('notes')
@@ -18,3 +21,15 @@ knex
   .catch(err => {
     console.error(err);
   });
+
+//Get a note by ID - accepts ID and returns the note as an object
+let searchId = 1003;
+
+knex
+  .select('notes.id','title','content')
+  .from('notes')
+  .where('id',`${searchId}`)
+  .then( ([item]) => {
+      console.log(item);
+  });
+
