@@ -39,9 +39,11 @@ router.get('/:id', (req, res, next) => {
   knex
     .select()
     .from('notes')
-    .where('id',id)
+    .leftJoin('folders', 'notes.folder_id', 'folders.id')
+    .where('notes.id',id)
     .then(([note]) => {  //array destructuring
       if (note) {
+        note.id=id;
         res.json(note);
       } else {
         next();
