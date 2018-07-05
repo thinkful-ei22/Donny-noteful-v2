@@ -36,14 +36,12 @@ router.get('/', (req, res, next) => {
 router.get('/:id', (req, res, next) => {
   const {id} = req.params;
 
-  knex
-    .select()
+  knex.select('notes.id', 'title', 'content', 'folders.id as folderId', 'folders.name as folderName')
     .from('notes')
     .leftJoin('folders', 'notes.folder_id', 'folders.id')
     .where('notes.id',id)
     .then(([note]) => {  //array destructuring
       if (note) {
-        note.id=id;
         res.json(note);
       } else {
         next();
@@ -107,7 +105,7 @@ router.put('/:id', (req, res, next) => {
 
 // CREATE / Post (insert) an item
 router.post('/', (req, res, next) => {
-  const { title, content } = req.body;
+  const { title, content, folderId } = req.body; // Add `folderId` to object destructure
 
   const newNote = { title, content };
   /***** Never trust users - validate input *****/
