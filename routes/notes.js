@@ -56,15 +56,12 @@ router.get('/:id', (req, res, next) => {
 router.put('/:id', (req, res, next) => {
   const {id} = req.params;
 
-  /***** Never trust users - validate input *****/
-  const updateObj = {};
-  const updateableFields = ['title', 'content'];
+  let updateObj = {
+    title: req.body.title,
+    content: req.body.content,
+    folder_id: req.body.folderId  // Add `folderId`
+  };
 
-  updateableFields.forEach(field => {
-    if (field in req.body) {
-      updateObj[field] = req.body[field];
-    }
-  });
 
   /***** Never trust users - validate input *****/
   if (!updateObj.title) {
@@ -73,10 +70,12 @@ router.put('/:id', (req, res, next) => {
     return next(err);
   }
 
+
   knex('notes')
     .where('notes.id',id)
     .update(updateObj)
-    .then(item => {
+    .returning(['notes.id','title','content','folder_id as folderID'])
+    .then(([item]) => {
       if (item) {
         res.json(item);
       } else {
@@ -86,28 +85,13 @@ router.put('/:id', (req, res, next) => {
     .catch(err => {
       next(err);
     });
-
-
-   
-
-  // notes.update(id, updateObj)
-  //   .then(item => {
-  //     if (item) {
-  //       res.json(item);
-  //     } else {
-  //       next();
-  //     }
-  //   })
-  //   .catch(err => {
-  //     next(err);
-  //   });
 });
 
 // CREATE / Post (insert) an item
 router.post('/', (req, res, next) => {
   const { title, content, folderId } = req.body; // Add `folderId` to object destructure
 
-  const newNote = { title, content };
+ 
   const newItem = {
     title: title,
     content: content,
@@ -117,23 +101,13 @@ router.post('/', (req, res, next) => {
   let noteId;
 
   /***** Never trust users - validate input *****/
-  if (!newNote.title) {
+  if (!newItem.title) {
     const err = new Error('Missing `title` in request body');
     err.status = 400;
     return next(err);
   }
 
-  // knex('notes')
-  //   .insert(newNote)
-  //   .returning(['id', 'title', 'content'])
-  //   .then(([note]) => {
-  //     if (note) {
-  //       res.location(`http://${req.headers.host}/notes/${note.id}`).status(201).json(note);
-  //     }
-  //   })
-  //   .catch(err => {
-  //     next(err);
-  //   });
+
 
   // Insert new note, instead of returning all the fields, just return the new `id`
   knex.insert(newItem)
