@@ -2,6 +2,33 @@
 DROP TABLE IF EXISTS notes;
 DROP TABLE IF EXISTS folders;
 
+CREATE TABLE tags (
+    id serial PRIMARY KEY,
+    name varchar(80) NOT NULL
+);
+
+INSERT INTO tags (name) VALUES
+    ('cool'),
+    ('dope'),
+    ('donky64'),
+    ('DOOM');
+
+--NOTES + TAGS JUNCTION
+
+CREATE TABLE notes_tags (
+  note_id INTEGER NOT NULL REFERENCES notes ON DELETE CASCADE,
+  tag_id INTEGER NOT NULL REFERENCES tags ON DELETE CASCADE
+);
+
+
+INSERT INTO notes_tags (note_id,tag_id) VALUES
+    (1000,1),
+    (1003,2),
+    (1004,3),
+    (1005,4);
+
+
+
 CREATE TABLE folders (
   id serial PRIMARY KEY,
   name text NOT NULL,

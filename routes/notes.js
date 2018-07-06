@@ -11,10 +11,15 @@ const knex = require('../knex');
 router.get('/', (req, res, next) => {
   const { searchTerm } = req.query;
   const  { folderId } = req.query;
+  const {tagId} = req.query;
 
-  knex.select('notes.id', 'title', 'content', 'folders.id as folderId', 'folders.name as folderName')
+  console.log(folderId);
+
+  knex.select('notes.id', 'title', 'content', 'folders.id as folderId', 'folders.name as folderName','tags.id as tagId','tags.name as tagName')
     .from('notes')
     .leftJoin('folders', 'notes.folder_id', 'folders.id')
+    .leftJoin('notes_tags','notes.id','notes_tags.note_id')
+    .leftJoin('tags','notes_tags.tag_id','tags.id')
     .modify(function (queryBuilder) {
       if (searchTerm) {
         queryBuilder.where('title', 'like', `%${searchTerm}%`);
@@ -22,7 +27,12 @@ router.get('/', (req, res, next) => {
     })
     .modify(function (queryBuilder) {
       if (folderId) {
-        queryBuilder.where('folder_id', folderId);
+        queryBuilder.where('notes.folder_id', folderId);
+      }
+    })
+    .modify(function (queryBuilder){
+      if(tagId){
+        queryBuilder.where('notes_tags.tag_id', tagId);
       }
     })
     .orderBy('notes.id')
@@ -31,6 +41,9 @@ router.get('/', (req, res, next) => {
     })
     .catch(err => next(err));
 });
+
+
+
 
 // Get a single item
 router.get('/:id', (req, res, next) => {
