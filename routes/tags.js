@@ -65,7 +65,7 @@ router.post('/', (req, res, next) => {
 });
 
 
-/*===UPDATE TAGS ====*/
+/*===UPDATE TAG ====*/
 router.put('/:id', (req, res, next) => {
   const id = req.params.id;
 
@@ -84,6 +84,7 @@ router.put('/:id', (req, res, next) => {
     err.status = 400;
     return next(err);
   }
+
 
   knex()
     .from('tags')
